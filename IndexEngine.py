@@ -5,13 +5,14 @@ from time import sleep
 
 
 class IndexEngine:
-    def __init__(self, indexFunc=FunkyFolder.init_files, threadNb=10):
+    def __init__(self, indexFunc=FunkyFolder.init_files, threadNb=3, batchSleepRatio=0.3):
         self.folderList = []
         self.running = False
         self.fileList=[]
         self.indexFunc = indexFunc
         self.jobList = []
         self.threadNb = threadNb
+        self.batchSleepRatio = batchSleepRatio
     def run(self):
 
         self.running = True
@@ -20,7 +21,7 @@ class IndexEngine:
                 while(len(self.fileList) > 0):
 
                     executor.submit(self.indexFunc, self.fileList.pop(0))
-                sleep(0.5*len(self.jobList))
+                sleep(self.batchSleepRatio*len(self.jobList))
 
 
     def add_folder(self, folder):
