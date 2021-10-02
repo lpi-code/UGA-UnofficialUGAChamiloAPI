@@ -128,3 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /.idea/
+
+#secret file
+
+client_secrets.json
