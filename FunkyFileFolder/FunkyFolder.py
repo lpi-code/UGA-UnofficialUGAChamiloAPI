@@ -26,7 +26,7 @@ class FunkyFolder(FunkyFile):
 
 
     def init_files(self):
-        
+
         basePage = self.scrapper.get_page(self._get_downloadUrl())
         soup = BSoup(basePage, "html.parser")
         rows = soup.find_all("tr")

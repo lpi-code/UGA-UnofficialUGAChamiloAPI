@@ -20,6 +20,7 @@ class IndexEngine:
                 while(len(self.fileList) > 0):
 
                     executor.submit(self.indexFunc, self.fileList.pop(0))
+                sleep(0.5*len(self.jobList))
 
 
     def add_folder(self, folder):
