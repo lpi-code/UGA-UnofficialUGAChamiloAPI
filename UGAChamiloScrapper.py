@@ -122,17 +122,18 @@ class UGAChamiloScrapper:
         return self.webSession.post(url,data=data,  allow_redirects=True, params=params)
 
     def add_folder_index_job(self, folder):
-
         return self.indexEngine.add_folder(folder)
 
     def start_index_engine(self):
         folderList = []
         for module in self.get_moduleList() :
-            self.add_folder_index_job(module.get_rootFolder())
+
+            self.indexEngine.add_folder(module.get_rootFolder())
         self.indexEngine.run()
 
     def set_job_finished(self, job):
         self.indexEngine.remove_job_from_list(job)
+
 
 
 

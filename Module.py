@@ -9,7 +9,7 @@ class Module :
         self.baseUrl = baseUrl
         self.scrapper = parentScrapper
         self.document_url = documentUrlFormat.format(self.codeName)
-        self.rootFolder = FunkyFolder(self.scrapper, None, self.codeName, self.get_document_url())
+        self.rootFolder = FunkyFolder(self.scrapper, None, self.codeName, self.codeName, self.get_document_url())
 
 
     def get_rootFolder(self):
@@ -45,3 +45,6 @@ class Module :
 
     def get_funkyFileList(self):
         return self.rootFolder.get_funkyFileList()
+
+    def get_rootFolder(self):
+        return self.rootFolder

@@ -7,8 +7,8 @@ from concurrent.futures import ThreadPoolExecutor, wait
 
 class FunkyFolder(FunkyFile):
 
-    def __init__(self, scrapper,  id, name, baseUrl):
-        FunkyFile.__init__(self, scrapper,  id, name, baseUrl)
+    def __init__(self, scrapper,  id, name, moduleName, baseUrl):
+        FunkyFile.__init__(self, scrapper,  id, name, moduleName, baseUrl)
         self.fileList = []
 
     def download(self, savePath):
@@ -26,7 +26,7 @@ class FunkyFolder(FunkyFile):
 
 
     def init_files(self):
-
+        
         basePage = self.scrapper.get_page(self._get_downloadUrl())
         soup = BSoup(basePage, "html.parser")
         rows = soup.find_all("tr")
@@ -40,6 +40,7 @@ class FunkyFolder(FunkyFile):
                 anchor = columns[0].find("a")
                 title = anchor["title"]
                 id = anchor["href"].split("id=")[1]
+
                 """
                 timeInfo = columns[len(columns)-1].text.split(' ')
                 ftime = time.fromisoformat(timeInfo[len(timeInfo)-1])
@@ -48,17 +49,18 @@ class FunkyFolder(FunkyFile):
                 print(fdate)
                 """
                 if("folder" in anchor.find("img")["src"]):
-                    newFolder = FunkyFolder(self.scrapper,id, title ,self.baseUrl)
+                    newFolder = FunkyFolder(self.scrapper,id, title, self.moduleName ,self.baseUrl)
                     self.scrapper.add_folder_index_job(newFolder)
                     self.fileList.append(newFolder)
 
                 else:
-                    newFile = FunkyFile(self.scrapper, id, title, self.baseUrl)
+                    newFile = FunkyFile(self.scrapper, id, title, self.moduleName, self.baseUrl)
                     self.fileList.append(newFile)
             except (TypeError, IndexError) as e:
                 # print("WARN : empty or incomplete row")
                 pass
-        self.scrapper.set_job_finished(self._get_downloadUrl())
+
+        self.scrapper.set_job_finished(self.get_UUID())
 
 
 
@@ -83,3 +85,6 @@ class FunkyFolder(FunkyFile):
 
                     funkyFileList.extend(newFileList)
         return funkyFileList
+
+    def get_UUID(self):
+        return FunkyFile.get_UUID(self) + "_DIR"

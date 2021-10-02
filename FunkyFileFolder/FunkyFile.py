@@ -2,15 +2,14 @@ import json
 
 
 class FunkyFile:
-    def __init__(self,scrapper,  id, name, baseUrl):
+    def __init__(self,scrapper,  id, name, moduleName, baseUrl):
         self.id = id
         self.name = name
         self.baseUrl = baseUrl
         self.scrapper = scrapper
+        self.moduleName = moduleName
 
-    def _get_downloadUrl(self):
 
-        return self.baseUrl + "&id=" + self.get_id()
 
     def download(self, savePath):
         path = savePath + '/' + self.name
@@ -29,4 +28,11 @@ class FunkyFile:
 
         }
         return output
+
+    def get_UUID(self):
+        return self.moduleName+"_"+str(self.get_id())
+
+    def _get_downloadUrl(self):
+
+        return self.baseUrl + "&id=" + self.get_id()
 
