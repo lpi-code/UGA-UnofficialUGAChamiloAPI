@@ -100,18 +100,6 @@ class UGAChamiloScrapper:
     def _post_page(self, url, data, params=None):
         return self.webSession.post(url,data=data,  allow_redirects=True, params=params)
 
-if __name__ == "__main__":
-
-    creds = _load_json("client_secrets.json")
-    a = UGAChamiloScrapper(creds)
-    modList = a.get_moduleList()
-
-    modList[7].init_files()
-    for file in modList[7].get_funkyFileList():
-        print(file.get_identifier())
-
-
-
 
 
 
