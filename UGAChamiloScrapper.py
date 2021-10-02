@@ -1,5 +1,6 @@
 import requests
 import json
+from UnofficialUGAChamiloAPI.IndexEngine import *
 from UnofficialUGAChamiloAPI.Module import Module
 from requests.cookies import RequestsCookieJar
 from bs4 import BeautifulSoup as BSoup
@@ -35,9 +36,9 @@ class UGAChamiloScrapper:
         self.baseHeaders = _load_json(DEFAULT_HEADERS_PATH) if headers == None else headers
         self.webSession = None
         self.credentials = credentials
-
+        self.indexEngine = IndexEngine()
         self._reset_webSession()
-
+        self.module_list = []
 
     def refresh(self):
         self._reset_webSession()
@@ -48,7 +49,7 @@ class UGAChamiloScrapper:
 
     def get_page(self, url):
         try:
-            _log("Not logged out getting webpage")
+            _log("Not logged out getting "+url)
             content = self._get_page(url).content
         except LoggedOutError:
             _log("logged out refreshing")
@@ -56,7 +57,7 @@ class UGAChamiloScrapper:
             content = self._get_page(url).content
         return content
 
-    def get_moduleList(self, modulePageUrl = DEFAULT_MODULE_URL):
+    def _refresh_modules(self, modulePageUrl):
         modulePage = self.get_page(modulePageUrl)
         soup = BSoup(modulePage, "html.parser")
         moduleList = []
@@ -68,6 +69,11 @@ class UGAChamiloScrapper:
 
             moduleList.append(nouveauModule)
         return moduleList
+
+    def get_moduleList(self, modulePageUrl = DEFAULT_MODULE_URL):
+        if len(self.module_list) == 0 :
+            self.module_list = self._refresh_modules(modulePageUrl)
+        return self.module_list
 
     def _sign_in(self):
 
@@ -114,6 +120,20 @@ class UGAChamiloScrapper:
 
     def _post_page(self, url, data, params=None):
         return self.webSession.post(url,data=data,  allow_redirects=True, params=params)
+
+    def add_folder_index_job(self, folder):
+
+        return self.indexEngine.add_folder(folder)
+
+    def start_index_engine(self):
+        folderList = []
+        for module in self.get_moduleList() :
+            self.add_folder_index_job(module.get_rootFolder())
+        self.indexEngine.run()
+
+    def set_job_finished(self, job):
+        self.indexEngine.remove_job_from_list(job)
+
 
 
 

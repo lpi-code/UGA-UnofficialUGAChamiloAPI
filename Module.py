@@ -1,6 +1,7 @@
 import json
 from bs4 import BeautifulSoup as BSoup
 from UnofficialUGAChamiloAPI.FunkyFileFolder.FunkyFolder import FunkyFolder
+
 class Module :
     def __init__(self, parentScrapper, title,  baseUrl, documentUrlFormat):
         self.title = title
@@ -8,16 +9,19 @@ class Module :
         self.baseUrl = baseUrl
         self.scrapper = parentScrapper
         self.document_url = documentUrlFormat.format(self.codeName)
-        self.rootFolder = None
-
-    def init_files(self):
         self.rootFolder = FunkyFolder(self.scrapper, None, self.codeName, self.get_document_url())
+
+
+    def get_rootFolder(self):
+        return self.rootFolder
+    def init_files(self):
+
         self.rootFolder.init_files()
 
     def dump(self):
         output = {
             "title"     :   self.title,
-            "codeName" : self.codeName,
+            "codeName"  : self.codeName,
             "baseUrl"   : self.baseUrl
 
         }

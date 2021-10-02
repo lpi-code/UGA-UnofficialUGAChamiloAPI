@@ -3,6 +3,7 @@ import pathlib
 from datetime import date, time
 import os
 from bs4 import BeautifulSoup as BSoup
+from concurrent.futures import ThreadPoolExecutor, wait
 
 class FunkyFolder(FunkyFile):
 
@@ -25,10 +26,12 @@ class FunkyFolder(FunkyFile):
 
 
     def init_files(self):
+
         basePage = self.scrapper.get_page(self._get_downloadUrl())
         soup = BSoup(basePage, "html.parser")
         rows = soup.find_all("tr")
         rows.pop(0)
+        folderList = []
         for row in rows:
 
 
@@ -46,17 +49,23 @@ class FunkyFolder(FunkyFile):
                 """
                 if("folder" in anchor.find("img")["src"]):
                     newFolder = FunkyFolder(self.scrapper,id, title ,self.baseUrl)
-                    newFolder.init_files()
+                    self.scrapper.add_folder_index_job(newFolder)
                     self.fileList.append(newFolder)
 
                 else:
                     newFile = FunkyFile(self.scrapper, id, title, self.baseUrl)
                     self.fileList.append(newFile)
             except (TypeError, IndexError) as e:
+                # print("WARN : empty or incomplete row")
+                pass
+        self.scrapper.set_job_finished(self._get_downloadUrl())
 
-                None
 
-                #print("WARN : empty or incomplete row")
+
+
+
+
+
 
 
 
