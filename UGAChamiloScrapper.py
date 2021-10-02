@@ -15,8 +15,12 @@ def _load_json(filename):
         data = json.loads(file.read())
     return data
 def _log(text):
-    #print("[] " + text)
+    print("[] " + text)
     None
+
+class LoggedOutError(Exception):
+    """Base class for exceptions in this module."""
+    pass
 
 class UGAChamiloScrapper:
     def __init__(
@@ -25,13 +29,15 @@ class UGAChamiloScrapper:
                     headers = None,
                     loginCasURL = DEFAULT_LOGINCAS_URL
 
+
                 ):
         self.loginCasURL = loginCasURL
         self.baseHeaders = _load_json(DEFAULT_HEADERS_PATH) if headers == None else headers
         self.webSession = None
         self.credentials = credentials
+
         self._reset_webSession()
-        self.refresh()
+
 
     def refresh(self):
         self._reset_webSession()
@@ -41,10 +47,14 @@ class UGAChamiloScrapper:
         return self.credentials
 
     def get_page(self, url):
-        if (not self._is_session_valid()):
+        try:
+            _log("Not logged out getting webpage")
+            content = self._get_page(url).content
+        except LoggedOutError:
+            _log("logged out refreshing")
             self.refresh()
-        _log("getting " + url)
-        return self._get_page(url).content
+            content = self._get_page(url).content
+        return content
 
     def get_moduleList(self, modulePageUrl = DEFAULT_MODULE_URL):
         modulePage = self.get_page(modulePageUrl)
@@ -63,7 +73,7 @@ class UGAChamiloScrapper:
 
         #Step one click on login button
         _log("login button click simulation")
-        response = self._get_page(self.loginCasURL)
+        response = self._get_page(self.loginCasURL, check=False)
         casWebPage = response.content
         casUrl = response.url
 
@@ -92,9 +102,15 @@ class UGAChamiloScrapper:
         self.webSession = requests.Session()
         self.webSession.headers.update(self.baseHeaders)
 
-    def _get_page(self, url, params=None):
+    def _get_page(self, url, params=None, check=True):
+        response = self.webSession.get(url, allow_redirects=True, params=params)
+        badContentLength = [8987, 7824, 9074]
+        if(check):
+            response.headers["content-length"]
+        if(check and int(response.headers["content-length"]) in badContentLength and "not allowed" in response.text):
+            raise LoggedOutError
 
-        return self.webSession.get(url, allow_redirects=True, params=params)
+        return response
 
     def _post_page(self, url, data, params=None):
         return self.webSession.post(url,data=data,  allow_redirects=True, params=params)
