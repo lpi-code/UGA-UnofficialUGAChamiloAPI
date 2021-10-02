@@ -1,6 +1,6 @@
 import requests
 import json
-from UnofficialUGAChamiloAPI import Module
+from UnofficialUGAChamiloAPI.Module import Module
 from requests.cookies import RequestsCookieJar
 from bs4 import BeautifulSoup as BSoup
 
@@ -54,8 +54,7 @@ class UGAChamiloScrapper:
             anchor = moduleElement.find('a')
             title = anchor.text.strip()
             moduleUrl = anchor["href"]
-            nouveauModule = Module(self, title, moduleUrl, DEFAULT_DOCUMENT_URL_FORMAT
-                                   )
+            nouveauModule = Module(self, title, moduleUrl, DEFAULT_DOCUMENT_URL_FORMAT)
 
             moduleList.append(nouveauModule)
         return moduleList
