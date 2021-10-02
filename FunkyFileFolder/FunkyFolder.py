@@ -1,4 +1,4 @@
-from FunkyFileFolder.FunkyFile import FunkyFile
+from UnofficialUGAChamiloAPI.FunkyFileFolder.FunkyFile import FunkyFile
 import pathlib
 from datetime import date, time
 import os

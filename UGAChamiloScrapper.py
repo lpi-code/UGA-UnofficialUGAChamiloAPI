@@ -1,10 +1,10 @@
 import requests
 import json
-from Module import Module
+from UnofficialUGAChamiloAPI import Module
 from requests.cookies import RequestsCookieJar
 from bs4 import BeautifulSoup as BSoup
 
-DEFAULT_HEADERS_PATH    = "data/headers.json"
+DEFAULT_HEADERS_PATH    = "/data/headers.json"
 DEFAULT_LOGINCAS_URL    = "https://chamilo.iut2.univ-grenoble-alpes.fr/main/auth/cas/logincas.php"
 DEFAULT_TEST_URL        = "https://chamilo.iut2.univ-grenoble-alpes.fr/user_portal.php"
 DEFAULT_MODULE_URL      = "https://chamilo.iut2.univ-grenoble-alpes.fr/user_portal.php"
