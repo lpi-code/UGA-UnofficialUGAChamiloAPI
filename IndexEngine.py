@@ -5,7 +5,7 @@ from time import sleep
 
 
 class IndexEngine:
-    def __init__(self, indexFunc=FunkyFolder.init_files, threadNb=3, batchSleepRatio=0.3):
+    def __init__(self, indexFunc=FunkyFolder.init_files, threadNb=40, batchSleepRatio=0.1):
         self.folderList = []
         self.running = False
         self.fileList=[]

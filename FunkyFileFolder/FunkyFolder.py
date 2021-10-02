@@ -13,7 +13,7 @@ class FunkyFolder(FunkyFile):
 
     def download(self, savePath):
         path = savePath + "/" +  self.name
-        pathlib.Path(path).mkdir(exist_ok=True)
+        pathlib.Path(path).mkdir(exist_ok=True, )
         for file in self.fileList:
             file.download(path)
 

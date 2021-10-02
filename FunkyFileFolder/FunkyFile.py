@@ -4,7 +4,8 @@ import json
 class FunkyFile:
     def __init__(self,scrapper,  id, name, moduleName, baseUrl):
         self.id = id
-        self.name = name
+        self.name = ""
+        self.set_name(name)
         self.baseUrl = baseUrl
         self.scrapper = scrapper
         self.moduleName = moduleName
@@ -36,3 +37,10 @@ class FunkyFile:
 
         return self.baseUrl + "&id=" + self.get_id()
 
+
+    def set_name(self, name):
+        name = name.strip()
+        unwantedChars = [":", "/", "\\", "'", "\"", "%", "(", ")", "{", "}", "-"]
+        for car in unwantedChars:
+            name.replace(car, "_")
+        self.name = name
