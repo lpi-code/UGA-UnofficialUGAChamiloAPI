@@ -14,8 +14,10 @@ def _load_json(filename):
     with open(filename, 'r') as file:
         data = json.loads(file.read())
     return data
-def log(text):
-    print("[] " + text)
+def _log(text):
+    #print("[] " + text)
+    None
+
 class UGAChamiloScrapper:
     def __init__(
                     self,
@@ -29,7 +31,7 @@ class UGAChamiloScrapper:
         self.webSession = None
         self.credentials = credentials
         self._reset_webSession()
-
+        self.refresh()
 
     def refresh(self):
         self._reset_webSession()
@@ -41,10 +43,10 @@ class UGAChamiloScrapper:
     def get_page(self, url):
         if (not self._is_session_valid()):
             self.refresh()
-        log("getting " + url)
-        return self._get_page(url).text
+        _log("getting " + url)
+        return self._get_page(url).content
 
-    def get_modulenameList(self, modulePageUrl = DEFAULT_MODULE_URL):
+    def get_moduleList(self, modulePageUrl = DEFAULT_MODULE_URL):
         modulePage = self.get_page(modulePageUrl)
         soup = BSoup(modulePage, "html.parser")
         moduleList = []
@@ -52,36 +54,38 @@ class UGAChamiloScrapper:
             anchor = moduleElement.find('a')
             title = anchor.text.strip()
             moduleUrl = anchor["href"]
-            nouveauModule = Module(title, moduleUrl, self)
+            nouveauModule = Module(self, title, moduleUrl, DEFAULT_DOCUMENT_URL_FORMAT
+                                   )
 
             moduleList.append(nouveauModule)
         return moduleList
+
     def _sign_in(self):
 
         #Step one click on login button
-        log("login button click simulation")
+        _log("login button click simulation")
         response = self._get_page(self.loginCasURL)
         casWebPage = response.content
         casUrl = response.url
 
         #Step two getting input fields value
-        log("getting from data from input fields")
+        _log("getting from data from input fields")
         inputData = {}
         soup = BSoup(casWebPage, "html.parser")
         for input in soup.find_all("input"):
             inputData[input['name']] = input['value']
 
         #Step three entering password and username
-        log("writing username and password in form")
+        _log("writing username and password in form")
         inputData["username"] = self.get_credentials()["username"]
         inputData["password"] = self.get_credentials()["password"]
 
         #Step four submitting form
-        log("submitting form")
+        _log("submitting form")
         response = self._post_page(casUrl, inputData, params=self.loginCasURL)
 
     def _is_session_valid(self, testUrl=DEFAULT_TEST_URL):
-        log("checking session")
+        _log("checking session")
         response = self._get_page(testUrl)
         return not "You are not allowed" in response.text
 
@@ -100,10 +104,13 @@ if __name__ == "__main__":
 
     creds = _load_json("client_secrets.json")
     a = UGAChamiloScrapper(creds)
-    modList = a.get_modulenameList()
-    module = modList[7]
+    modList = a.get_moduleList()
 
-    print(module.get_module_description())
+    modList[7].init_files()
+    for file in modList[7].get_funkyFileList():
+        print(file.get_identifier())
+
+
 
 
 

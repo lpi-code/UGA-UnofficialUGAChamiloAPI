@@ -1,12 +1,18 @@
 import json
 from bs4 import BeautifulSoup as BSoup
-
+from FunkyFileFolder.FunkyFolder import FunkyFolder
 class Module :
-    def __init__(self, title,  baseUrl, parentScrapper):
+    def __init__(self, parentScrapper, title,  baseUrl, documentUrlFormat):
         self.title = title
         self.codeName = baseUrl.split('/')[4]
         self.baseUrl = baseUrl
         self.scrapper = parentScrapper
+        self.document_url = documentUrlFormat.format(self.codeName)
+        self.rootFolder = None
+
+    def init_files(self):
+        self.rootFolder = FunkyFolder(self.scrapper, None, self.codeName, self.get_document_url())
+        self.rootFolder.init_files()
 
     def dump(self):
         output = {
@@ -25,5 +31,13 @@ class Module :
         description = soup.find("div", attrs={"class": "page-course"}).text
         return description
 
-    def get_document_url(self):
-        return None
+    def get_document_url(self ):
+        return self.document_url
+
+    def download(self, path):
+        self.rootFolder.download(path)
+        with open(path + "/" + self.codeName + "/" + "description.txt","w") as file:
+            file.write(self.get_module_description())
+
+    def get_funkyFileList(self):
+        return self.rootFolder.get_funkyFileList()
