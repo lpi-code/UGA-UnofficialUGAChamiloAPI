@@ -131,3 +131,4 @@ dmypy.json
 #secret file
 
 client_secrets.json
+/.idea/
