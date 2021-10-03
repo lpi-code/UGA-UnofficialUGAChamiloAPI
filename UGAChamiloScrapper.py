@@ -36,7 +36,7 @@ class UGAChamiloScrapper:
         self.credentials = credentials
         self.module_list = []
         self.currentSessionIndex = 0
-        self.nbSessions = 15
+        self.nbSessions = 50
         for i in range(self.nbSessions):
             self.webSessions.append(requests.Session())
 
@@ -94,7 +94,7 @@ class UGAChamiloScrapper:
 
     def add_file_download_job(self, file, path):
 
-        self.downloadEngine.add_file(file, path)
+        self.downloadEngine.add_job(file.get_UUID(),[file, path])
 
 
 

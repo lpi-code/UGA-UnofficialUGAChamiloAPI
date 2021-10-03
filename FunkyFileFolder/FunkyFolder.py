@@ -28,40 +28,46 @@ class FunkyFolder(FunkyFile):
             return self.baseUrl
 
     def init_files(self):
+        try:
+            basePage = self.scrapper.get_page(self._get_downloadUrl())
+            soup = BSoup(basePage, "html.parser")
+            rows = soup.find_all("tr")
+            rows.pop(0)
+            folderList = []
+            for row in rows:
 
-        basePage = self.scrapper.get_page(self._get_downloadUrl())
-        soup = BSoup(basePage, "html.parser")
-        rows = soup.find_all("tr")
-        rows.pop(0)
-        folderList = []
-        for row in rows:
+                try:
+                    columns = row.findAll("td")
+                    anchor = columns[0].find("a")
+                    title = anchor["title"]
+                    id = anchor["href"].split("id=")[1]
 
-            try:
-                columns = row.findAll("td")
-                anchor = columns[0].find("a")
-                title = anchor["title"]
-                id = anchor["href"].split("id=")[1]
+                    """
+                    timeInfo = columns[len(columns)-1].text.split(' ')
+                    ftime = time.fromisoformat(timeInfo[len(timeInfo)-1])
+                    fdate = date.fromisoformat(timeInfo[len(timeInfo)-2])
+                    print(ftime)
+                    print(fdate)
+                    """
+                    if ("folder" in anchor.find("img")["src"]):
+                        newFolder = FunkyFolder(self.scrapper, id, title, self.moduleName, self.baseUrl)
+                        self.scrapper.add_folder_index_job(newFolder)
+                        self.fileList.append(newFolder)
 
-                """
-                timeInfo = columns[len(columns)-1].text.split(' ')
-                ftime = time.fromisoformat(timeInfo[len(timeInfo)-1])
-                fdate = date.fromisoformat(timeInfo[len(timeInfo)-2])
-                print(ftime)
-                print(fdate)
-                """
-                if ("folder" in anchor.find("img")["src"]):
-                    newFolder = FunkyFolder(self.scrapper, id, title, self.moduleName, self.baseUrl)
-                    self.scrapper.add_folder_index_job(newFolder)
-                    self.fileList.append(newFolder)
+                    else:
+                        newFile = FunkyFile(self.scrapper, id, title, self.moduleName, self.baseUrl)
+                        self.fileList.append(newFile)
+                except (TypeError, IndexError) as e:
+                    # print("WARN : empty or incomplete row")
+                    pass
+            self.scrapper.set_done_folder_index_job(self)
 
-                else:
-                    newFile = FunkyFile(self.scrapper, id, title, self.moduleName, self.baseUrl)
-                    self.fileList.append(newFile)
-            except (TypeError, IndexError) as e:
-                # print("WARN : empty or incomplete row")
-                pass
+        except:
+            import traceback
+            traceback.print_exc()
 
-        self.scrapper.set_done_folder_index_job(self)
+
+
 
     def is_root(self):
         return self.id == None

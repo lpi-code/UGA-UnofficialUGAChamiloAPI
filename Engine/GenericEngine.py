@@ -27,12 +27,16 @@ class GenericEngine:
         self.dynamicQueue = dynamicQueue
 
     def run(self):
+
         with ThreadPoolExecutor(max_workers=self.threadNb) as executor:
             while self.get_nb_pending_job() > 0 or self.dynamicQueue and self.get_nb_current_job() > 0:
                 while self.get_nb_pending_job():
-                    jobArg = self._pop_job()
+                    jobId, jobArg = self._pop_job()
                     executor.submit(self.func, jobArg)
                 sleep(self.batchSleepRatio * self.get_nb_current_job())
+
+
+
 
     def get_nb_pending_job(self):
         """
@@ -80,11 +84,14 @@ class GenericEngine:
                                                                         len(self.jobList[DONE]))
 
     def _move(self, jobId, inputStack, outputStack):
-        #print("ENGINE : Moving job : {} from  {} to {}".format(jobId, inputStack, outputStack))
+        print("ENGINE : Moving job : {} from  {} to {}".format(jobId, inputStack, outputStack))
 
 
         index = self.search_by_id(jobId, inputStack)
         if index is None:
+            print("jobId not found " + jobId )
+            a = self.search_by_id(jobId, outputStack)
+            print("Begining of trouble " + jobId)
             raise jobNotFoundError
 
         jobData = self.jobList[inputStack].pop(index)
@@ -93,9 +100,10 @@ class GenericEngine:
         print(self.dump_stats())
     def _pop_job(self):
         """
-        Pop first pending job and return argument list
+        Pop first pending job and return jobid, argument
         """
         jobId = self.jobList[PENDING][0][0]
-        arguments = self.jobList[PENDING][0][1]
+        argument = self.jobList[PENDING][0][1]
         self._move(jobId, PENDING, CURRENT)
-        return arguments
+        return jobId, argument
+

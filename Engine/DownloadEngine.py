@@ -6,7 +6,7 @@ from time import sleep
 
 
 class DownloadEngine(GenericEngine):
-    def __init__(self, threadNb=100, batchSleepRatio=0.1):
+    def __init__(self, threadNb=10, batchSleepRatio=0.3):
         GenericEngine.__init__(self, self.download_func, threadNb, batchSleepRatio)
 
     def download_func(self, args):
@@ -18,6 +18,5 @@ class DownloadEngine(GenericEngine):
 
         self.done_job(args[0].get_UUID())
 
-    def add_file(self, file, path):
-        GenericEngine.add_job(self, file.get_UUID(), [file,path])
+
 
