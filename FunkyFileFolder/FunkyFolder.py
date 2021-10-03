@@ -5,25 +5,26 @@ import os
 from bs4 import BeautifulSoup as BSoup
 from concurrent.futures import ThreadPoolExecutor, wait
 
+
 class FunkyFolder(FunkyFile):
 
-    def __init__(self, scrapper,  id, name, moduleName, baseUrl):
-        FunkyFile.__init__(self, scrapper,  id, name, moduleName, baseUrl)
+    def __init__(self, scrapper, id, name, moduleName, baseUrl):
+        FunkyFile.__init__(self, scrapper, id, name, moduleName, baseUrl)
         self.fileList = []
 
     def download(self, savePath):
-        path = savePath + "/" +  self.name
+        print("FF : " +savePath)
+        path = savePath + "/" + self.name
         pathlib.Path(path).mkdir(exist_ok=True)
         for file in self.fileList:
-            file.download(path)
+            self.scrapper.add_file_download(file, path)
+        print("FF DONE : " + savePath)
 
     def _get_downloadUrl(self):
         if not self.is_root():
             return FunkyFile._get_downloadUrl(self)
         else:
             return self.baseUrl
-
-
 
     def init_files(self):
 
@@ -33,7 +34,6 @@ class FunkyFolder(FunkyFile):
         rows.pop(0)
         folderList = []
         for row in rows:
-
 
             try:
                 columns = row.findAll("td")
@@ -48,8 +48,8 @@ class FunkyFolder(FunkyFile):
                 print(ftime)
                 print(fdate)
                 """
-                if("folder" in anchor.find("img")["src"]):
-                    newFolder = FunkyFolder(self.scrapper,id, title, self.moduleName ,self.baseUrl)
+                if ("folder" in anchor.find("img")["src"]):
+                    newFolder = FunkyFolder(self.scrapper, id, title, self.moduleName, self.baseUrl)
                     self.scrapper.add_folder_index_job(newFolder)
                     self.fileList.append(newFolder)
 
@@ -62,27 +62,17 @@ class FunkyFolder(FunkyFile):
 
         self.scrapper.set_job_finished(self.get_UUID())
 
-
-
-
-
-
-
-
-
-
     def is_root(self):
-        return self.id==None
+        return self.id == None
 
     def get_funkyFileList(self):
         funkyFileList = []
-        for fileObj in self.fileList :
+        for fileObj in self.fileList:
             if type(fileObj) == FunkyFile:
                 funkyFileList.append(fileObj)
             else:
                 newFileList = fileObj.get_funkyFileList()
                 if newFileList != None:
-
                     funkyFileList.extend(newFileList)
         return funkyFileList
 

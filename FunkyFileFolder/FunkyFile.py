@@ -2,15 +2,13 @@ import json
 
 
 class FunkyFile:
-    def __init__(self,scrapper,  id, name, moduleName, baseUrl):
+    def __init__(self, scrapper, id, name, moduleName, baseUrl):
         self.id = id
         self.name = ""
         self.set_name(name)
         self.baseUrl = baseUrl
         self.scrapper = scrapper
         self.moduleName = moduleName
-
-
 
     def download(self, savePath):
         path = savePath + '/' + self.name
@@ -24,23 +22,24 @@ class FunkyFile:
 
     def get_identifier(self):
         output = {
-            "id" : self.id,
-            "name" : self.name
+            "id": self.id,
+            "name": self.name
 
         }
         return output
 
     def get_UUID(self):
-        return self.moduleName+"_"+str(self.get_id())
+        return self.moduleName + "_" + str(self.get_id())
 
     def _get_downloadUrl(self):
-
         return self.baseUrl + "&id=" + self.get_id()
-
 
     def set_name(self, name):
         name = name.strip()
         unwantedChars = [":", "/", "\\", "'", "\"", "%", "(", ")", "{", "}", "-"]
         for car in unwantedChars:
-            name.replace(car, "_")
+            name = name.replace(car, "_")
         self.name = name
+
+    def get_name(self, name):
+        return self.name
