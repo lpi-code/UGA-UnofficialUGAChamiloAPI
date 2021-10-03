@@ -17,6 +17,7 @@ class FunkyFile:
         with open(path, filemode) as file:
             file.write(data)
 
+
     def get_id(self):
         return self.id
 
@@ -43,3 +44,6 @@ class FunkyFile:
 
     def get_name(self, name):
         return self.name
+
+    def get_moduleName(self):
+        return self.moduleName

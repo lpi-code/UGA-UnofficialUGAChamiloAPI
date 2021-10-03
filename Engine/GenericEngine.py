@@ -51,8 +51,8 @@ class GenericEngine:
         """
         Add Pending job
         """
-        print(self.dump_stats())
-        print("ENGINE : new job : {}".format(jobId))
+        #print(self.dump_stats())
+        #print("ENGINE : new job : {}".format(jobId))
 
         self.jobList[PENDING].append([jobId, jobArguments])
 
@@ -80,8 +80,8 @@ class GenericEngine:
                                                                         len(self.jobList[DONE]))
 
     def _move(self, jobId, inputStack, outputStack):
-        print("ENGINE : Moving job : {} from  {} to {}".format(jobId, inputStack, outputStack))
-        print(self.dump_stats())
+        #print("ENGINE : Moving job : {} from  {} to {}".format(jobId, inputStack, outputStack))
+
 
         index = self.search_by_id(jobId, inputStack)
         if index is None:
@@ -90,7 +90,7 @@ class GenericEngine:
         jobData = self.jobList[inputStack].pop(index)
 
         self.jobList[outputStack].append(jobData)
-
+        print(self.dump_stats())
     def _pop_job(self):
         """
         Pop first pending job and return argument list

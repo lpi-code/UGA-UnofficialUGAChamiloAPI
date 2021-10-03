@@ -13,12 +13,13 @@ class FunkyFolder(FunkyFile):
         self.fileList = []
 
     def download(self, savePath):
-        print("FF : " +savePath)
+
         path = savePath + "/" + self.name
         pathlib.Path(path).mkdir(exist_ok=True)
         for file in self.fileList:
-            self.scrapper.add_file_download(file, path)
-        print("FF DONE : " + savePath)
+            self.scrapper.add_file_download_job(file, path)
+
+
 
     def _get_downloadUrl(self):
         if not self.is_root():
@@ -60,7 +61,7 @@ class FunkyFolder(FunkyFile):
                 # print("WARN : empty or incomplete row")
                 pass
 
-        self.scrapper.set_job_finished(self.get_UUID())
+        self.scrapper.set_done_folder_index_job(self)
 
     def is_root(self):
         return self.id == None
@@ -77,4 +78,8 @@ class FunkyFolder(FunkyFile):
         return funkyFileList
 
     def get_UUID(self):
-        return FunkyFile.get_UUID(self) + "_DIR"
+        if not self.is_root():
+            return FunkyFile.get_UUID(self) + "_DIR"
+        else:
+            return "{}_ROOT_DIR".format(self.get_moduleName())
+
