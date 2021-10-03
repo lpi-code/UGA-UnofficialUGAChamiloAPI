@@ -36,7 +36,7 @@ class UGAChamiloScrapper:
         self.credentials = credentials
         self.module_list = []
         self.currentSessionIndex = 0
-        self.nbSessions = 50
+        self.nbSessions = 10
         for i in range(self.nbSessions):
             self.webSessions.append(requests.Session())
 

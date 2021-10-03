@@ -60,11 +60,12 @@ class FunkyFolder(FunkyFile):
                 except (TypeError, IndexError) as e:
                     # print("WARN : empty or incomplete row")
                     pass
-            self.scrapper.set_done_folder_index_job(self)
 
-        except:
+
+        except Exception:
             import traceback
             traceback.print_exc()
+        self.scrapper.set_done_folder_index_job(self)
 
 
 
